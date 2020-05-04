@@ -1,0 +1,49 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 75%;
+}
+
+body {
+  text-align: center;
+  padding: 3rem 0;
+  background-image: radial-gradient(#27496d 60%, #142850);
+  background-size: cover;
+  height: 100vh;
+  overflow-y: hidden;
+}
+
+.heading {
+
+}
+
+.heading__text {
+  font-size: 3rem;
+  font-family: 'Merienda', cursive;
+  color: #00a8cc;
+  margin-bottom: 1.5rem;
+}
+
+.game {
+  margin: 0;
+  /* size:  */
+}
+.score__text {
+  font-size: 2rem;
+  font-family: 'Nunito Sans', sans-serif;
+  color: #81e4fa;
+}
+#game-canvas {
+  /* height: 500px;
+  width: 700px; */
+  /* background-color: #0c7b93; */
+  border-style: solid;
+  border-radius: 3px;
+  border-width: 5px;
+  border-color: #142850;
+  transition: all ease;
+}
