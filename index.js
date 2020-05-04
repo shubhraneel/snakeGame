@@ -1,5 +1,6 @@
 let gameSpeed = 100;
 let snakeColor = "#81f5ff";
+let snakeHead = "#29b0bd";
 let canvasColor = "#0c7b93";
 let appleColor = "#d11c1c";
 let height = 500;
@@ -14,7 +15,7 @@ let dir = { x: 1, y: 0 };
 canv.fillStyle = canvasColor;
 canv.fillRect(0, 0, w, h);
 
-let unit = 50;
+let unit = 20;
 
 const rand = (x) => Math.floor((Math.random() * x) / unit) * unit;
 
@@ -65,16 +66,30 @@ const drawApple = (apple) => {
 
 drawApple(apple);
 
-function clearCanvas() {
+const clearCanvas = () => {
   canv.fillStyle = canvasColor;
 
   canv.fillRect(0, 0, w, h);
 }
 
+const generateApple = () => {
+  while(true) {
+    appleOnSnake = false;
+    apple = {x: rand(w), y: rand(h)};
+    snake.forEach(element => {
+      if(apple.x === element.x && apple.y === element.y) {
+        appleOnSnake = true;
+      }
+    })
+    if(appleOnSnake === false)
+      return apple;
+  }
+}
+
 const move = () => {
   enqueue(dir.x, dir.y);
   if(appleEaten) {
-    apple = {x: rand(w), y: rand(h)};
+    apple = generateApple();
     appleEaten = false;
     score+=10;
     scoreVal.textContent = score;
@@ -93,24 +108,35 @@ const isDead = () => {
 
 const draw = () => {
   canv.fillStyle = snakeColor;
+  canv.strokeStyle = "black";
   snake.forEach(element => {
     canv.fillRect(element.x, element.y, unit, unit);
+    canv.strokeRect(element.x, element.y, unit, unit);
   });
+  canv.fillStyle = snakeHead;
+  canv.fillRect(snake[0].x, snake[0].y, unit, unit);
+
 };
 
-const updateGame = () => {
+const step = t1 => t2 => {
   if(isDead()) {
+    gameEnd();
     return;
   }
-  else {
-    setTimeout(()=> {
-      clearCanvas();
-      move();
-      drawApple(apple);
-      draw();
-      updateGame();
-    }, gameSpeed);
-  }
-};
 
-updateGame();
+  if(t2-t1>gameSpeed) {
+    move();
+    clearCanvas();
+    drawApple(apple);
+    draw();
+    window.requestAnimationFrame(step(t2));
+  }
+
+  else {
+    window.requestAnimationFrame(step(t1));
+  }
+}
+
+
+
+requestAnimationFrame(step(0));
