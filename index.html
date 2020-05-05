@@ -7,6 +7,7 @@
       href="https://fonts.googleapis.com/css2?family=Merienda:wght@400;700&family=Nunito+Sans:wght@400;700;900&family=Roboto+Slab:wght@400;700;900&display=swap"
       rel="stylesheet"
     />
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
     <link rel="stylesheet" href="style.css" />
     <title>Snakes Game</title>
   </head>
@@ -27,6 +28,33 @@
         <p class="play-again">
           Play again
         </p>
+      </div>
+    </div>
+    <div class="play-buttons">
+      <div class="play-button play-top"><i class="fas fa-arrow-up fa-3x"></i></div>
+      <div class="play-button play-left"><i class="fas fa-arrow-left fa-3x"></i></div>
+      <div class="play-pause">
+        <label for="check-play" class="checkbox-label">
+        <input type="checkbox" id="check-play">
+        <div class = "pause-play">
+        <span class="first-bar"></span>
+        <span class="second-bar"></span>
+        <i class="fas fa-play fa-3x"></i>
+        </div>
+        </label>
+      </div>
+      <div class="play-button play-right"><i class="fas fa-arrow-right fa-3x"></i></div>
+      <div class="play-button play-bottom"><i class="fas fa-arrow-down fa-3x"></i></div>
+    </div>
+    <div class="speed-buttons">
+      <div class="speed">
+        <h2 class="score__text">Speed: <span>1</span></h2>
+      </div>
+      <div class="speed-up play-button">
+        <i class="fas fa-plus fa-3x"></i>
+      </div>
+      <div class="speed-down play-button">
+        <i class="fas fa-minus fa-3x"></i>
       </div>
     </div>
     <script src="index.js"></script>

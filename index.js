@@ -20,9 +20,21 @@ let snake;
 let apple;
 let appleEaten;
 let score;
+let pause;
 let scoreVal = document.querySelector(".score--value");
 
-const initialize = () => {
+document.addEventListener("keydown", turn);
+document.querySelector(".play-buttons").addEventListener("click", controls);
+document.querySelector(".play-buttons").addEventListener("touchstart", controls);
+document.querySelector(".speed-buttons").addEventListener("click", speedControl);
+document.querySelector(".speed-buttons").addEventListener("tocuhstart", speedControl);
+
+gameOver.style.display = "block";
+document.querySelector(".game-over").style.visibility = "hidden";
+document.querySelector(".play-again").textContent = "Start game";
+clearCanvas();
+
+function initialize() {
   dir = { x: 1, y: 0 };
   canv.fillStyle = canvasColor;
   canv.fillRect(0, 0, w, h);
@@ -37,40 +49,81 @@ const initialize = () => {
 
   score = 0;
   scoreVal.textContent = score;
+  pause = false;
 };
 
-const turn = (event) => {
+function turn(event) {
   const key = event.key;
   if (
-    (key === "w" || key === "ArrowUp" || key === "8" || key === "h") &&
-    dir.y === 0
+    key === "w" || key === "ArrowUp" || key === "8" || key === "h"
   ) {
-    dir.x = 0;
-    dir.y = -1;
+    up();
   } else if (
-    (key === "a" || key === "ArrowLeft" || key === "4" || key === "j") &&
-    dir.x === 0
+    key === "a" || key === "ArrowLeft" || key === "4" || key === "j"
   ) {
-    dir.x = -1;
-    dir.y = 0;
+    left();
   } else if (
-    (key === "s" || key === "ArrowDown" || key === "2" || key === "k") &&
-    dir.y === 0
+    key === "s" || key === "ArrowDown" || key === "2" || key === "k"
   ) {
-    dir.x = 0;
-    dir.y = 1;
+    down();
   } else if (
-    (key === "d" || key === "ArrowRight" || key === "6" || key === "l") &&
-    dir.x === 0
+    key === "d" || key === "ArrowRight" || key === "6" || key === "l"
   ) {
-    dir.x = 1;
-    dir.y = 0;
+    right();
+  } else if (key === " ") {
+      pause = !pause;
   }
 };
 
-document.addEventListener("keydown", turn);
+function controls(e) {
+  const item = e.target;
+  console.log(item);
+  if(item.classList[1] === "play-top") {
+    up();
+  } else if(item.classList[1] === "play-left") {
+    left();
+  } else if(item.classList[1] === "play-right") {
+    right();
+  } else if(item.classList[1] === "play-bottom") {
+    down();
+  } else if(item.classList[0] === "pause-play") {
+    pause = !pause;
+  }
+}
 
-const enqueue = (xdir, ydir) => {
+function up() {
+  if(dir.y === 0)
+  {
+    dir.x = 0;
+    dir.y = -1;
+  }
+}
+
+function left() {
+  if(dir.x === 0)
+  {
+    dir.x = -1;
+    dir.y = 0;
+  }
+}
+
+function down() {
+  if(dir.y === 0)
+  {
+    dir.x = 0;
+    dir.y = 1;
+  }
+}
+
+function right() {
+  if(dir.x === 0)
+  {
+    dir.x = 1;
+    dir.y = 0;
+  }
+}
+
+function enqueue(xdir, ydir) {
   snake.unshift({ x: snake[0].x + xdir * unit, y: snake[0].y + ydir * unit });
   if (snake[0].x >= w) snake[0].x = 0;
   else if (snake[0].x < 0) snake[0].x = w - unit;
@@ -79,18 +132,18 @@ const enqueue = (xdir, ydir) => {
   if (snake[0].x === apple.x && snake[0].y === apple.y) appleEaten = true;
 };
 
-const drawApple = (apple) => {
+function drawApple(apple) {
   canv.fillStyle = "orangered";
   canv.fillRect(apple.x, apple.y, unit, unit);
 };
 
-const clearCanvas = () => {
+function clearCanvas() {
   canv.fillStyle = canvasColor;
 
   canv.fillRect(0, 0, w, h);
 };
 
-const generateApple = () => {
+function generateApple() {
   while (true) {
     appleOnSnake = false;
     apple = { x: rand(w), y: rand(h) };
@@ -103,7 +156,7 @@ const generateApple = () => {
   }
 };
 
-const move = () => {
+function move() {
   enqueue(dir.x, dir.y);
   if (appleEaten) {
     apple = generateApple();
@@ -115,13 +168,13 @@ const move = () => {
   }
 };
 
-const isDead = () => {
+function isDead() {
   for (let i = 1; i < snake.length; i++)
     if (snake[0].x === snake[i].x && snake[0].y === snake[i].y) return true;
   return false;
 };
 
-const draw = () => {
+function draw() {
   canv.fillStyle = snakeColor;
   canv.strokeStyle = "black";
   snake.forEach((element) => {
@@ -132,7 +185,7 @@ const draw = () => {
   canv.fillRect(snake[0].x, snake[0].y, unit, unit);
 };
 
-const gameEnd = () => {
+function gameEnd() {
   gameOver.style.display = "block";
 };
 
@@ -149,7 +202,7 @@ const step = (t1) => (t2) => {
     return;
   }
 
-  if (t2 - t1 > gameSpeed) {
+  if (t2 - t1 > gameSpeed && pause === false) {
     move();
     clearCanvas();
     drawApple(apple);
@@ -159,8 +212,3 @@ const step = (t1) => (t2) => {
     window.requestAnimationFrame(step(t1));
   }
 };
-
-gameOver.style.display = "block";
-document.querySelector(".game-over").style.visibility = "hidden";
-document.querySelector(".play-again").textContent = "Start game";
-clearCanvas();
