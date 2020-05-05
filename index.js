@@ -1,4 +1,5 @@
 let gameSpeed = 100;
+let gameSpeedDisplay = 1;
 let snakeColor = "#81f5ff";
 let snakeHead = "#29b0bd";
 let canvasColor = "#0c7b93";
@@ -72,6 +73,12 @@ function turn(event) {
     right();
   } else if (key === " ") {
       pause = !pause;
+  } else if (key === "=") {
+      speedUp();
+      document.querySelector(".speed-display").textContent = Math.round(gameSpeedDisplay*10)/10;
+  } else if (key === "-") {
+      speedDown();
+      document.querySelector(".speed-display").textContent = Math.round(gameSpeedDisplay*10)/10;
   }
 };
 
@@ -192,6 +199,7 @@ function gameEnd() {
 document.querySelector(".play-again").addEventListener("click", () => {
   gameOver.style.display = "none";
   document.querySelector(".game-over").style.visibility = "visible";
+  document.querySelector(".play-again").textContent = "Play again";
   initialize();
   requestAnimationFrame(step(0));
 });
@@ -212,3 +220,36 @@ const step = (t1) => (t2) => {
     window.requestAnimationFrame(step(t1));
   }
 };
+
+function speedControl(e) {
+  const item = e.target;
+  if(item.classList[0] === "speed-up")
+  {
+    speedUp();
+  }
+  else if(item.classList[0] === "speed-down")
+  {
+    speedDown();
+  }
+  document.querySelector(".speed-display").textContent = Math.round(gameSpeedDisplay*10)/10;
+}
+
+function speedUp() {
+  gameSpeedDisplay += 0.2;
+  gameSpeed = Math.round(100/gameSpeedDisplay);
+  if(gameSpeed < 1)
+  {
+    gameSpeed = 1;
+    gameSpeedDisplay = 100;
+  }  
+}
+
+function speedDown() {
+  gameSpeedDisplay -= 0.2;
+  if(gameSpeedDisplay <= 0)
+  {
+    gameSpeedDisplay = 0.2;
+    return;
+  }  
+  gameSpeed = Math.round(100/gameSpeedDisplay);
+}
