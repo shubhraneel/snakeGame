@@ -56,3 +56,29 @@ body {
   left: 50%;
   transform: translate(-50%, -50%);
 }
+
+.game-over {
+  font-family: 'Nunito Sans', sans-serif;
+  font-size: 5rem;
+  color: aqua;
+  text-shadow: 0px 0px 40px #000000;
+}
+
+.play-again {
+  background-color: rgb(10, 173, 173);
+  font-family: 'Nunito Sans', sans-serif;
+  border-radius: 5px;
+  color: rgb(181, 241, 241);
+  display: inline-block;
+  padding: 1rem;
+  font-size: 3rem;
+  margin-top: 2rem;
+  box-shadow: 0 0 10px 5px rgb(0, 99, 99);
+  transition: all .4s;
+}
+
+.play-again:hover {
+  background-color: #81e4fa;
+  color: white;
+  cursor: pointer;
+}
