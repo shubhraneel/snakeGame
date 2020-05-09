@@ -30,7 +30,7 @@ body {
 
 .game {
   margin: 1rem;
-  /* size:  */
+  position: relative;
 }
 .score__text {
   font-size: 2rem;
@@ -87,15 +87,15 @@ body {
   position: fixed;
   right: 5%;
   top: 50%;
-  width: 160px;
-  height: 160px;
+  width: 13.3rem;
+  height: 13.3rem;
 }
 
 /*pause button*/
 
 .pause-play {
-  width: 50px;
-  height: 50px;
+  width: 4.17rem;
+  height: 4.17rem;
   background-color: rgb(0, 99, 99);
   margin: auto;
   border-radius: 5px;
@@ -154,10 +154,10 @@ body {
   background-color: rgb(0, 99, 99);
   color: #81e4fa;
   border-radius: 5px;
-  width: 50px;
-  height: 50px;
+  width: 4.17rem;
+  height: 4.17rem;
   position: absolute;
-  padding: 7px;
+  padding: .58rem;
   transition: all .4s;
 }
 
@@ -225,4 +225,47 @@ body {
 .speed-up, .speed-down {
   position: static;
   display: inline-block;
+}
+
+@media(max-width: 1200px) {
+  .speed-buttons {
+    top: unset;
+    right: unset;
+    bottom: 15%;
+    left: 20%;
+  }
+
+  .play-buttons {
+    top: unset;
+    right: unset;
+    bottom: 10%;
+    right: 20%;
+  }
+}
+
+@media(max-width: 900px) {
+  .speed-buttons {
+    bottom: 10%;
+    left: 20%;
+  }
+
+  .play-buttons {
+    bottom: 5%;
+    right: 20%;
+  }
+}
+
+@media(max-width: 600px) {
+  html {
+    font-size: 50%;
+  }
+  .speed-buttons {
+    bottom: 5%;
+    left: 20%;
+  }
+
+  .play-buttons {
+    bottom: 2%;
+    right: 20%;
+  }
 }
