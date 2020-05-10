@@ -6,8 +6,8 @@ let canvasColor = "#0c7b93";
 let appleColor = "#d11c1c";
 let wallColor = "#202080";
 let unit = 20;
-let nSpace = 10; //space for maze;
-let space = 200;
+let nSpace = 5; //space for maze;
+let space = 100;
 let canvas = document.getElementById("game-canvas");
 let w1 = window.matchMedia("(max-width: 1200px)");
 let w2 = window.matchMedia("(max-width: 900px)");
@@ -16,7 +16,8 @@ let h = parseInt(canvas.getAttribute("height"));
 let w = parseInt(canvas.getAttribute("width"));
 let canv = canvas.getContext("2d");
 let gameOver = document.querySelector(".game-end");
-let maze = 0;
+let maze = false;
+let ongoingTouch;
 
 changeSize();
 
@@ -46,7 +47,13 @@ document
   .addEventListener("click", speedControl);
 document
   .querySelector(".speed-buttons")
-  .addEventListener("tocuhstart", speedControl);
+  .addEventListener("touchstart", speedControl);
+document
+  .querySelector(".checkbox-maze__input")
+  .addEventListener("change", (e) => {
+    if (e.target.checked) maze = true;
+    else maze = false;
+  });
 
 gameOver.style.display = "block";
 document.querySelector(".game-over").style.display = "none";
@@ -56,8 +63,8 @@ clearCanvas();
 function changeSize() {
   if (w3.matches) {
     canvas.setAttribute("width", "300");
-    canvas.setAttribute("height", "400");
-    h = 400;
+    canvas.setAttribute("height", "450");
+    h = 450;
     w = 300;
     unit = 15;
     space = unit * nSpace;
@@ -85,17 +92,20 @@ function changeSize() {
 
 function initialize() {
   dir = { x: 1, y: 0 };
-  maze = 1;
-  mazeCells = [];
-  joinCellsX = [];
-  joinCellsY = [];
-  space = unit * nSpace;
-  mazeGen();
-  clearCanvas();
+  if (maze) {
+    mazeCells = [];
+    joinCellsX = [];
+    joinCellsY = [];
+    space = unit * nSpace;
+    mazeGen();
+    clearCanvas();
 
-  while (true) {
+    while (true) {
+      snake = [{ x: rand(w), y: rand(h) }];
+      if (!mazeCheck(snake[0])) break;
+    }
+  } else {
     snake = [{ x: rand(w), y: rand(h) }];
-    if (!mazeCheck(snake[0])) break;
   }
   generateApple();
 
@@ -148,7 +158,7 @@ function controls(e) {
     right();
   } else if (item.classList[1] === "play-bottom") {
     down();
-  } else if (item.classList[0] === "pause-play") {
+  } else if (item.classList[0] === "pause-play" || item.classList[0] === "checkbox-input__pause") {
     pause = !pause;
   }
 }
@@ -196,7 +206,7 @@ function drawApple(apple) {
 }
 
 function clearCanvas() {
-  if (maze === 0) {
+  if (!maze) {
     canv.fillStyle = canvasColor;
     canv.fillRect(0, 0, w, h);
   } else {
@@ -217,7 +227,7 @@ function generateApple() {
         flag = true;
       }
     });
-    if (maze === 1 && !flag) {
+    if (maze && !flag) {
       flag = mazeCheck(apple);
     }
     if (!flag) return;
@@ -239,7 +249,7 @@ function move() {
 function isDead() {
   for (let i = 1; i < snake.length; i++)
     if (snake[0].x === snake[i].x && snake[0].y === snake[i].y) return true;
-  if (maze === 1) {
+  if (maze) {
     if (mazeCheck(snake[0])) return true;
   }
   return false;
@@ -438,4 +448,69 @@ function mazeCheck(cell) {
   )
     return true;
   else return false;
+}
+
+//touch controls
+document.addEventListener("touchstart", (e) => {
+  let touch = e.touches[e.touches.length - 1];
+  if (ongoingTouch === undefined) {
+    ongoingTouch = copytouch(touch);
+  }
+});
+document.addEventListener("touchmove", (e) => {
+  if (ongoingTouch !== undefined) {
+    let touches = e.touches;
+    let idx;
+    for (let i = 0; i < touches.length; i++) {
+      if (touches[i].identifier === ongoingTouch.identifier) {
+        idx = i;
+        break;
+      }
+    }
+    // if (
+    //   distance(
+    //     touches[idx].pageX,
+    //     touches[idx].pageY,
+    //     ongoingTouch.pageX,
+    //     ongoingTouch.pageY
+    //   ) >= 3
+    // ) {
+      swipeControls(
+        touches[idx].pageX - ongoingTouch.pageX,
+        touches[idx].pageY - ongoingTouch.pageY
+      );
+      ongoingTouch = undefined;
+    // }
+  }
+});
+document.addEventListener("touchend", handleEndCancel);
+document.addEventListener("touchcancel", handleEndCancel);
+function handleEndCancel(e) {
+  if (ongoingTouch !== undefined) {
+    let touches = e.changedTouches;
+    let idx;
+    for (let i = 0; i < touches.length; i++) {
+      if (touches[i].identifier === ongoingTouch.identifier) {
+        idx = i;
+        break;
+      }
+    }
+    if (idx === undefined) return;
+    else ongoingTouch = undefined;
+  }
+}
+//copytouch to only copy the required properties to prevent unnecesssary memory wastage
+function copytouch({ identifier, pageX, pageY }) {
+  return { identifier, pageX, pageY };
+}
+function distance(x1, y1, x2, y2) {
+  return Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
+}
+function swipeControls(x, y) {
+  let modX = Math.abs(x);
+  let modY = Math.abs(y);
+  if (y < 0 && modY > 1.1 * modX) up();
+  else if (x < 0 && modX > 1.1 * modY) left();
+  else if (y > 0 && modY > 1.1 * modX) down();
+  else if (x > 0 && modX > 1.1 * modY) right();
 }
