@@ -18,10 +18,6 @@ body {
   overscroll-behavior: none;
 }
 
-.heading {
-
-}
-
 .heading__text {
   font-size: 3rem;
   font-family: 'Merienda', cursive;
@@ -63,7 +59,7 @@ body {
   font-family: 'Nunito Sans', sans-serif;
   font-size: 5rem;
   color: aqua;
-  text-shadow: 0px 0px 40px #000000;
+  text-shadow: 0px 0px 100px#000000;
 }
 
 .play-again {
@@ -161,6 +157,7 @@ body {
   position: absolute;
   padding: .58rem;
   transition: all .4s;
+  cursor: pointer;
 }
 
 .play-left, .play-pause, .play-right {
@@ -287,22 +284,106 @@ body {
 .maze-toggle {
   position: absolute;
   left: 10%;
-  top: 40%;
+  top: 50%;
 }
 
+.auto-toggle {
+  top: 70%;
+}
+
+.stop-button {
+  width: auto;
+  height: 4rem;
+  padding: 0.5rem;
+  right: 8%;
+  bottom: 15%;
+}
+
+.stop-button .score__text {
+  pointer-events: none;
+}
+
+.instruction-button {
+  width: 15rem;
+  left: 15%;
+  transform: translateX(-50%);
+  top: 35%;
+}
+
+.popup-check {
+  display: none;
+}
+
+.instructions {
+  max-width: 700px;
+  width: 90%;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  background-color: rgb(7, 74, 100);
+  color: aliceblue;
+  font-family: 'Roboto Slab', sans-serif;
+  font-size: 2rem;
+  padding: 2.5rem;
+  border-radius: 20px;
+  box-shadow: 0 0 2000px 1000px rgba(0, 0, 0, 0.7), inset 0 0 7px 2px #81e4fa;
+  opacity: 0;
+  z-index: 10;
+  visibility: hidden;
+  transition: all 0.4s;
+}
+
+.instruction:after {
+  content: "";
+  height: 100vh;
+  width: 100vw;
+  background-color: red;
+}
+
+#check-popup:checked ~ .instructions {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.instructions__list {
+  list-style-position: inside;
+  text-align: left;
+}
+
+.instructions__item {
+  margin: 1rem 0;
+}
+
+.instructions .fas {
+  pointer-events: all;
+}
+
+.fa-times {
+  position: absolute;
+  top: 1rem;
+  right: 2rem;
+  cursor: pointer;
+  transition: all .6s;
+}
+
+.fa-times:hover {
+  color: #81e4fa;
+}
 
 @media(max-width: 1200px) {
   .speed-buttons {
     top: unset;
     right: unset;
-    bottom: 15%;
+    bottom: 5%;
     left: 20%;
   }
 
   .maze-toggle {
     top: unset;
     right: unset;
-    bottom: 15%;
+    bottom: 4.5rem;
     left: 50%;
     transform: translateX(-50%);
   }
@@ -312,6 +393,30 @@ body {
     right: unset;
     bottom: 10%;
     right: 20%;
+  }
+
+  .stop-button {
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 0.5%;
+    width: 6rem;
+  }
+
+  .auto-toggle {
+    bottom: 12.5rem !important;
+  }
+
+  .stop-button {
+    width: 5rem;
+    height: 3rem;
+    font-size: 2px !important;
+    padding: 0.1rem;
+  }
+  
+  .instruction-button {
+    top: unset;
+    bottom: 15%;
+    left: 20%;
   }
 }
 
@@ -335,15 +440,16 @@ body {
 
 @media(max-width: 600px) {
   html {
-    font-size: 50%;
+    font-size: 45%;
   }
   .speed-buttons {
     bottom: 5%;
-    left: 10%;
+    left: 5%;
   }
 
   .play-buttons {
     bottom: 2%;
-    right: 10%;
+    right: 5%;
   }
+
 }

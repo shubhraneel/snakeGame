@@ -17,7 +17,13 @@ let w = parseInt(canvas.getAttribute("width"));
 let canv = canvas.getContext("2d");
 let gameOver = document.querySelector(".game-end");
 let maze = false;
+let autoMode = false;
 let ongoingTouch;
+let rows = h / unit;
+let cols = w / unit;
+let aStarUnfinished = false;
+let pauseCheckBox = document.querySelector(".checkbox-input__pause");
+let gameStop = false;
 
 changeSize();
 
@@ -48,17 +54,26 @@ document
 document
   .querySelector(".speed-buttons")
   .addEventListener("touchstart", speedControl);
-document
-  .querySelector(".checkbox-maze__input")
-  .addEventListener("change", (e) => {
-    if (e.target.checked) maze = true;
-    else maze = false;
-  });
+document.querySelector("#checkbox-maze").addEventListener("change", (e) => {
+  if (e.target.checked) maze = true;
+  else maze = false;
+});
+document.querySelector("#checkbox-auto").addEventListener("change", (e) => {
+  if (e.target.checked) autoMode = true;
+  else autoMode = false;
+});
+document.querySelector(".stop-button").addEventListener("click", () => {
+  gameStop = true;
+});
+document.querySelector(".fa-times").addEventListener( "click", () => {
+  document.querySelector("#check-popup").checked = false;
+});
 
 gameOver.style.display = "block";
 document.querySelector(".game-over").style.display = "none";
 document.querySelector(".play-again").textContent = "Start game";
 clearCanvas();
+
 
 function changeSize() {
   if (w3.matches) {
@@ -66,6 +81,14 @@ function changeSize() {
     canvas.setAttribute("height", "450");
     h = 450;
     w = 300;
+    if (window.matchMedia("(max-height: 700px)").matches) {
+      canvas.setAttribute("height", "375");
+      h = 375;
+    }
+    if (window.matchMedia("(max-height: 600px)").matches) {
+      canvas.setAttribute("height", "300");
+      h = 300;
+    } 
     unit = 15;
     space = unit * nSpace;
     clearCanvas();
@@ -91,7 +114,7 @@ function changeSize() {
 }
 
 function initialize() {
-  dir = { x: 1, y: 0 };
+  dir = { x: 0, y: 0 };
   if (maze) {
     mazeCells = [];
     joinCellsX = [];
@@ -110,10 +133,14 @@ function initialize() {
   generateApple();
 
   appleEaten = false;
+  document.querySelectorAll(".checkbox-maze__input").forEach(element => {element.disabled = true});
 
+  rows = h / unit;
+  cols = w / unit;
   score = 0;
   scoreVal.textContent = score;
-  pause = true;
+  pause = false;
+  gameStop = false;
   clearCanvas();
   drawApple(apple);
   draw();
@@ -136,6 +163,7 @@ function turn(event) {
     right();
   } else if (key === " ") {
     pause = !pause;
+    pauseCheckBox.checked = !pauseCheckBox.checked;
   } else if (key === "=") {
     speedUp();
     document.querySelector(".speed-display").textContent =
@@ -158,7 +186,10 @@ function controls(e) {
     right();
   } else if (item.classList[1] === "play-bottom") {
     down();
-  } else if (item.classList[0] === "pause-play" || item.classList[0] === "checkbox-input__pause") {
+  } else if (
+    item.classList[0] === "pause-play" ||
+    item.classList[0] === "checkbox-input__pause"
+  ) {
     pause = !pause;
   }
 }
@@ -238,6 +269,7 @@ function move() {
   enqueue(dir.x, dir.y);
   if (appleEaten) {
     generateApple();
+    aStarSearch();
     appleEaten = false;
     score += 10;
     scoreVal.textContent = score;
@@ -268,6 +300,7 @@ function draw() {
 
 function gameEnd() {
   gameOver.style.display = "block";
+  document.querySelectorAll(".checkbox-maze__input").forEach(element => {element.disabled = false;});
 }
 
 document.querySelector(".play-again").addEventListener("click", () => {
@@ -275,17 +308,31 @@ document.querySelector(".play-again").addEventListener("click", () => {
   document.querySelector(".game-over").style.display = "block";
   document.querySelector(".play-again").style.display = "none";
 
+  if (autoMode) {
+    gameOver.style.display = "none";
+    document.querySelector(".game-over").textContent = "GAME OVER";
+    document.querySelector(".play-again").style.display = "block";
+    document.querySelector(".play-again").textContent = "Play again";
+    aStarSearch();
+    requestAnimationFrame(step(0));
+    return;
+  }
+
   document.querySelector(".game-over").textContent = "3";
   setTimeout(() => {
     document.querySelector(".game-over").textContent = "2";
     setTimeout(() => {
       document.querySelector(".game-over").textContent = "1";
       setTimeout(() => {
-        gameOver.style.display = "none";
-        document.querySelector(".game-over").textContent = "GAME OVER";
-        document.querySelector(".play-again").style.display = "block";
-        document.querySelector(".play-again").textContent = "Play again";
-        pause = false;
+        document.querySelector(".game-over").textContent =
+          "Press or swipe any direction to start";
+        setTimeout(() => {
+          gameOver.style.display = "none";
+          document.querySelector(".game-over").textContent = "GAME OVER";
+          document.querySelector(".play-again").style.display = "block";
+          document.querySelector(".play-again").textContent = "Play again";
+          pause = false;
+        }, 1500);
       }, 700);
     }, 700);
   }, 700);
@@ -294,12 +341,13 @@ document.querySelector(".play-again").addEventListener("click", () => {
 });
 
 const step = (t1) => (t2) => {
-  if (isDead()) {
+  if (isDead() || gameStop === true) {
     gameEnd();
+    gameStop = false;
     return;
   }
-
-  if (t2 - t1 > gameSpeed && pause === false) {
+  if (!aStarUnfinished && t2 - t1 > gameSpeed && !pause) {
+    if (autoMode) setAutoDir();
     move();
     clearCanvas();
     drawApple(apple);
@@ -475,11 +523,11 @@ document.addEventListener("touchmove", (e) => {
     //     ongoingTouch.pageY
     //   ) >= 3
     // ) {
-      swipeControls(
-        touches[idx].pageX - ongoingTouch.pageX,
-        touches[idx].pageY - ongoingTouch.pageY
-      );
-      ongoingTouch = undefined;
+    swipeControls(
+      touches[idx].pageX - ongoingTouch.pageX,
+      touches[idx].pageY - ongoingTouch.pageY
+    );
+    ongoingTouch = undefined;
     // }
   }
 });
@@ -503,9 +551,6 @@ function handleEndCancel(e) {
 function copytouch({ identifier, pageX, pageY }) {
   return { identifier, pageX, pageY };
 }
-function distance(x1, y1, x2, y2) {
-  return Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
-}
 function swipeControls(x, y) {
   let modX = Math.abs(x);
   let modY = Math.abs(y);
@@ -513,4 +558,174 @@ function swipeControls(x, y) {
   else if (x < 0 && modX > 1.1 * modY) left();
   else if (y > 0 && modY > 1.1 * modX) down();
   else if (x > 0 && modX > 1.1 * modY) right();
+}
+
+//priority queue for A* search
+class PriorityElement {
+  constructor(element, priority) {
+    this.element = element;
+    this.priority = priority;
+  }
+}
+
+class PriorityQueue {
+  constructor() {
+    this.items = [];
+  }
+
+  enqueue(element, priority) {
+    let priorityElement = new PriorityElement(element, priority);
+    let contain = false;
+
+    for (let i = 0; i < this.items.length; i++) {
+      if (this.items[i].priority < priorityElement.priority) {
+        this.items.splice(i, 0, priorityElement);
+        contain = true;
+        break;
+      }
+    }
+
+    if (!contain) {
+      this.items.push(priorityElement);
+    }
+  }
+
+  dequeue() {
+    return this.items.pop();
+  }
+}
+
+let tempArray = new Array(cols).fill(false);
+let tempArray2 = new Array(cols).fill(undefined);
+let foundDest = false;
+let arr = [];
+
+//manhattan distance
+function manDistance(x1, y1, x2, y2) {
+  return Math.abs(x1 - x2) + Math.abs(y1 - y2);
+}
+
+function aStarSearch() {
+  aStarUnfinished = true;
+  arr = []; //array to trace path
+  foundDest = false;
+  let closedList = [];
+  let cellSmallestF = [];
+  for (let i = 0; i < rows; i++) { closedList.push(tempArray.slice()); cellSmallestF.push(tempArray2.slice())};
+
+  let openList = new PriorityQueue();
+  let dest = { i: apple.y / unit, j: apple.x / unit, parent: undefined };
+  let initDist = manDistance(
+    snake[0].x / unit,
+    snake[0].y / unit,
+    dest.j,
+    dest.i
+  );
+  let i = snake[0].y / unit;
+  let j = snake[0].x / unit;
+  let start = {
+    i: i,
+    j: j,
+    g: 0,
+    h: initDist,
+    f: initDist,
+    parent: undefined,
+  };
+  console.log(start); //!!!!
+  console.log(dest); //!!!!
+  openList.enqueue(start, start.f);
+  cellSmallestF[i][j] = initDist;
+  while (openList.items.length > 0) {
+    // console.log(JSON.stringify(openList));
+    let current = openList.dequeue().element;
+    i = current.i;
+    j = current.j;
+    // alert(current.i + " " + current.j);
+    // console.log(i);
+    // console.log(j);
+    closedList[i][j] = true;
+    // console.log(JSON.stringify(closedList));
+
+    let gNew, hNew, fNew, nextI, nextJ;
+    for (let k = 0; k < 4; k++) {
+      if (k === 0) {
+        nextI = i - 1;
+        nextJ = j;
+      } else if (k === 1) {
+        nextI = i;
+        nextJ = j - 1;
+      } else if (k === 2) {
+        nextI = i + 1;
+        nextJ = j;
+      } else if (k === 3) {
+        nextI = i;
+        nextJ = j + 1;
+      }
+      if (nextI >= rows) nextI = 0;
+      else if (nextI < 0) nextI = rows - 1;
+      if (nextJ >= cols) nextJ = 0;
+      else if (nextJ < 0) nextJ = cols - 1;
+      gNew = current.g + 1;
+      hNew = manDistance(nextJ, nextI, dest.j, dest.i);
+      fNew = gNew + hNew;
+      console.log(!closedList[nextI][nextJ]);
+      if (dest.i === nextI && dest.j === nextJ) {
+        dest.parent = current;
+        console.log("found"); //!!!!!;
+        workPath(dest);
+        foundDest = true;
+        return;
+      } else if (!closedList[nextI][nextJ] && isUnblocked(nextI, nextJ, gNew)) {
+        if (cellSmallestF[nextI][nextJ] === undefined || cellSmallestF[nextI][nextJ] > fNew) {
+          openList.enqueue(
+            {
+              i: nextI,
+              j: nextJ,
+              g: gNew,
+              h: hNew,
+              f: fNew,
+              parent: current,
+            },
+            fNew
+          );
+          cellSmallestF[nextI][nextJ] = fNew;
+        }
+      }
+    }
+  }
+  if (!foundDest) {
+    aStarUnfinished = false;
+  }
+}
+
+function isUnblocked(i, j, g) {
+  x = j * unit;
+  y = i * unit;
+  if (maze && mazeCheck({ x: x, y: y })) return false;
+  for (let k = 1; k < snake.length - g; k++)
+    if (x === snake[k].x && y === snake[k].y) return false;
+  //an exceptional case when the length of the snake is two, the previous check assumes that it can reverse direction 
+  if(snake.length === 2 && x === snake[1].x && snake[1].y) return false;  
+  return true;
+}
+
+function workPath(dest) {
+  let element = dest;
+  while (element !== undefined) {
+    arr.push(element);
+    element = element.parent;
+  }
+  console.log(arr);
+  aStarUnfinished = false;
+}
+
+function setAutoDir() {
+  if (foundDest) {
+    let curr = arr.pop();
+    let next = arr[arr.length - 1];
+    if (next.i === curr.i - 1 || (curr.i === 0 && next.i === rows - 1)) up();
+    if (next.j === curr.j - 1 || (curr.j === 0 && next.j === cols - 1)) left();
+    if (next.i === curr.i + 1 || (curr.i === rows - 1 && next.i === 0)) down();
+    if (next.j === curr.j + 1 || (curr.j === cols - 1 && next.j === 0)) right();
+  }
 }
