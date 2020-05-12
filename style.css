@@ -16,6 +16,8 @@ body {
   height: 100vh;
   overflow-y: hidden;
   overscroll-behavior: none;
+  position: fixed; /*address bar hiding prevention*/
+  -webkit-overflow-scrolling: touch; /* for apple devices */
 }
 
 .heading__text {
