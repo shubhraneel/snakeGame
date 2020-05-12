@@ -195,6 +195,7 @@ clearCanvas();
 //touch device instruction edit
 if(w1.matches) {
   document.getElementsByClassName("instructions__item")[0].textContent = "Touch the arrow buttons provided or swipe in direction to control the movement";
+  screen.orientation.lock("portrait");
 }
 
 //the function that runs each step of the game
