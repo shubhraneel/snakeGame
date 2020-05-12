@@ -324,7 +324,7 @@ body {
   position: fixed;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%) scale(0);
+  transform: translate(-50%, -50%) scale(0.4);
   background-color: rgb(7, 74, 100);
   color: aliceblue;
   font-family: 'Roboto Slab', sans-serif;
