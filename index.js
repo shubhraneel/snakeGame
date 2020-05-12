@@ -194,7 +194,13 @@ clearCanvas();
 
 //touch device instruction edit
 if(w1.matches) {
-  document.getElementsByClassName("instructions__item")[0].textContent = "Touch the arrow buttons provided or swipe in direction to control the movement";
+  document.getElementsByClassName("instructions__item")[0].textContent = "Tap the arrow buttons provided or swipe in direction to control the movement";
+  document.getElementsByClassName("instructions__item")[1].textContent = "Tap the pause/play button provided to pause/play";
+  document.getElementsByClassName("instructions__item")[2].textContent = "The speed of the game can be modified using the buttons given";
+  let newListItem = document.createElement("li");
+  newListItem.className = "instructions__item";
+  newListItem.appendChild(document.createTextNode("Turn off auto-rotate"));
+  document.querySelector(".instructions__list").appendChild(newListItem);
 }
 
 //the function that runs each step of the game
