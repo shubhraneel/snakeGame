@@ -11,7 +11,7 @@ html {
 body {
   text-align: center;
   padding: 3rem 0;
-  background-image: radial-gradient(#27496d 60%, #142850);
+  background-image: radial-gradient(rgba(52, 86, 119, 0.8) 60%, rgba(1, 17, 49, 0.9)), url(images/forest.jpg);
   background-size: cover;
   height: 100vh;
   overflow-y: hidden;
@@ -21,8 +21,9 @@ body {
 .heading__text {
   font-size: 3rem;
   font-family: 'Merienda', cursive;
-  color: #00a8cc;
+  color: #57bcd3;
   margin-bottom: 1.5rem;
+  text-shadow: 0 0 7px rgba(0, 0, 0, 0.7);
 }
 
 .game {
@@ -34,11 +35,9 @@ body {
   font-family: 'Nunito Sans', sans-serif;
   color: #81e4fa;
   margin-bottom: 1rem;
+  text-shadow: 0 0 7px rgba(0, 0, 0, 0.7);
 }
 #game-canvas {
-  /* height: 500px;
-  width: 700px; */
-  /* background-color: #0c7b93; */
   border-style: solid;
   border-radius: 3px;
   border-width: 5px;
@@ -58,8 +57,9 @@ body {
 .game-over {
   font-family: 'Nunito Sans', sans-serif;
   font-size: 5rem;
-  color: aqua;
+  color: rgb(182, 255, 255);
   text-shadow: 0px 0px 100px#000000;
+  -webkit-text-stroke: 2px rgb(0, 24, 24);
 }
 
 .play-again {
@@ -158,6 +158,7 @@ body {
   padding: .58rem;
   transition: all .4s;
   cursor: pointer;
+  box-shadow: 0 0 5px 2px rgba(0, 0, 0, 0.5);
 }
 
 .play-left, .play-pause, .play-right {
@@ -181,6 +182,7 @@ body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  box-shadow: 0 0 5px 2px rgba(0, 0, 0, 0.5);
 }
 
 .play-right {
@@ -235,7 +237,7 @@ body {
 .checkbox-maze__label {
   width: 7.5rem;
   height: 3.5rem;
-  background: #ccc;
+  background: rgb(137, 192, 199);
   position: relative;
   display: inline-block;
   border-radius: 3.83rem;
@@ -253,7 +255,7 @@ body {
   left: 0;
   top: -5px;
   z-index: 2;
-  background: #fff;
+  background: rgb(191, 255, 242);
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.6);
   transition: 0.4s;
 }
@@ -324,7 +326,7 @@ body {
   background-color: rgb(7, 74, 100);
   color: aliceblue;
   font-family: 'Roboto Slab', sans-serif;
-  font-size: 2rem;
+  font-size: 1.85rem;
   padding: 2.5rem;
   border-radius: 20px;
   box-shadow: 0 0 2000px 1000px rgba(0, 0, 0, 0.7), inset 0 0 7px 2px #81e4fa;
@@ -332,13 +334,6 @@ body {
   z-index: 10;
   visibility: hidden;
   transition: all 0.4s;
-}
-
-.instruction:after {
-  content: "";
-  height: 100vh;
-  width: 100vw;
-  background-color: red;
 }
 
 #check-popup:checked ~ .instructions {
