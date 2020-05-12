@@ -743,7 +743,7 @@ function isUnblocked(i, j, g) {
   for (let k = 1; k < snake.length - g; k++)
     if (x === snake[k].x && y === snake[k].y) return false;
   //an exceptional case when the length of the snake is two, the previous check assumes that it can reverse direction 
-  if(snake.length === 2 && x === snake[1].x && snake[1].y) return false;  
+  if(snake.length === 2 && x === snake[1].x && y === snake[1].y) return false;  
   return true;
 }
 
