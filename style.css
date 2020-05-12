@@ -13,11 +13,10 @@ body {
   padding: 3rem 0;
   background-image: radial-gradient(rgba(52, 86, 119, 0.8) 60%, rgba(1, 17, 49, 0.9)), url(images/forest.jpg);
   background-size: cover;
+  background-position: center;
   height: 100vh;
   overflow-y: hidden;
   overscroll-behavior: none;
-  position: fixed; /*address bar hiding prevention*/
-  -webkit-overflow-scrolling: touch; /* for apple devices */
 }
 
 .heading__text {
